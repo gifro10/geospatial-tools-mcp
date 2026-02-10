@@ -924,9 +924,25 @@ def _suggest_drone_for_altitude(altitude_m):
 # MAIN
 # ============================================================
 
+import os
+import sys
+
 def main():
-    """Run the MCP server."""
-    mcp.run(transport="stdio")
+    """Run the MCP server.
+    
+    Supports two transport modes:
+    - stdio: For local use with Claude Desktop / Claude Code (default)
+    - streamable-http: For remote hosting on Smithery or other platforms
+    
+    Set TRANSPORT=streamable-http environment variable for remote mode.
+    """
+    transport = os.environ.get("TRANSPORT", "stdio")
+    
+    if transport == "streamable-http":
+        port = int(os.environ.get("PORT", "8000"))
+        mcp.run(transport="streamable-http", host="0.0.0.0", port=port)
+    else:
+        mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":
